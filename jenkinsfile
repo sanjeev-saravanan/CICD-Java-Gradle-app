@@ -1,22 +1,25 @@
-pipeline{
-    agent any
-    stages{
-        stage("sonar quality check"){
-            agent{
+pipeline {
+    agent any // Top-level agent (optional if using stage-specific agents)
+
+    stages {
+        stage("Sonar Quality Check") {
+            agent {
                 docker {
-                    image 'openjdk:11'
+                    image 'openjdk:11' // Use OpenJDK 11 for this stage
                 }
             }
 
-            steps{
-                script{
+            steps {
+                script {
+                    // Ensure gradlew is executable
+                    sh 'chmod +x gradlew'
+
+                    // Run SonarQube analysis
                     withSonarQubeEnv(credentialsId: 'sonarpassword') {
-                        sh 'chmod +x gradlew'
-                        sh './gradlew sonarqube' 
+                        sh './gradlew sonarqube'
                     }
                 }
             }
         }
     }
-    
 }
